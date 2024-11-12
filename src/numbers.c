@@ -9,14 +9,32 @@
 
 double power(double b, unsigned int p) {
 
-    double res = 1.;
-    for (int i = 0; i < p; ++i) {
-        res *= b;
+    if (p == 0) { return 1.; }
+
+    if (p % 2 == 0) {
+        double temp = power(b, p / 2);
+        return temp * temp;
+    } else {
+        return b * power(b, p - 1);
     }
-    return res;
 
 }
 
+unsigned long int intpower(unsigned int b, unsigned int p) {
+
+    unsigned long int res = 1L;
+
+    while (p > 0) {
+
+        if (p & 1) { res *= b; }
+        res *= res;
+        p >>= 1;
+
+    }
+
+    return res;
+
+}
 
 unsigned long factorial_(unsigned int n, unsigned long res) {
 
@@ -28,9 +46,7 @@ unsigned long factorial_(unsigned int n, unsigned long res) {
 
 }
 
-
 unsigned long factorial(unsigned int n) { return factorial_(n, 1); }
-
 
 long int binom(int alpha, unsigned int n) {
 
