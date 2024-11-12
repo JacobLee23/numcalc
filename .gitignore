@@ -4,8 +4,6 @@
 __pycache__/
 dist/
 docs/_build/
+*/build/
 
-# IDE directories
-.idea/
-.vs/
-.vscode/
+*.pyd

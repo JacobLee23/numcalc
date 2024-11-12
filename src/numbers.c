@@ -36,27 +36,52 @@ unsigned long int intpower(unsigned int b, unsigned int p) {
 
 }
 
-unsigned long factorial_(unsigned int n, unsigned long res) {
-
-    if (n == 0 || n == 1) {
-        return res;
-    }
-
-    return factorial_(n - 1, n * res);
-
-}
+unsigned long factorial_(
+    unsigned int n, unsigned long res
+) { return (n == 0 || n == 1 ? res : factorial_(n - 1, n * res)); }
 
 unsigned long factorial(unsigned int n) { return factorial_(n, 1); }
 
 long int binom(int alpha, unsigned int n) {
 
     if (n == 0) { return 1; }
-
     long int res = 1L;
-    for (int k = 1; k <= n; ++k) {
-        res *= (alpha - k + 1) / k;
-    }
-
+    for (int k = 1; k <= n; ++k) { res *= (alpha - k + 1) / k; }
     return res;
+
+}
+
+static PyObject *numbers_power(PyObject *self, PyObject *args) {
+
+    const double b;
+    const unsigned int p;
+    if (!PyArg_ParseTuple(args, "dI", &b, &p)) { return NULL; }
+    return PyFloat_FromDouble(power(b, p));
+
+}
+
+static PyObject *numbers_intpower(PyObject *self, PyObject *args) {
+
+    const unsigned int b;
+    const unsigned int p;
+    if (!PyArg_ParseTuple(args, "II", &b, &p)) { return NULL; }
+    return PyLong_FromUnsignedLong(intpower(b, p));
+
+}
+
+static PyObject *numbers_factorial(PyObject *self, PyObject *args) {
+
+    const unsigned int n;
+    if (!PyArg_ParseTuple(args, "I", &n)) { return NULL; }
+    return PyLong_FromUnsignedLong(factorial(n));
+
+}
+
+static PyObject *numbers_binom(PyObject *self, PyObject *args) {
+
+    const int alpha;
+    const unsigned int k;
+    if (!PyArg_ParseTuple(args, "iI")) { return NULL; }
+    return PyLong_FromLong(binom(alpha, k));
 
 }
