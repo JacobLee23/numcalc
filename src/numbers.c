@@ -20,9 +20,9 @@ double power(double b, unsigned int p) {
 
 }
 
-unsigned long int intpower(unsigned int b, unsigned int p) {
+unsigned long ipower(unsigned int b, unsigned int p) {
 
-    unsigned long int res = 1L;
+    unsigned long res = 1L;
 
     while (p > 0) {
 
@@ -42,10 +42,10 @@ unsigned long factorial_(
 
 unsigned long factorial(unsigned int n) { return factorial_(n, 1); }
 
-long int binom(int alpha, unsigned int n) {
+long binom(int alpha, unsigned int n) {
 
     if (n == 0) { return 1; }
-    long int res = 1L;
+    long res = 1L;
     for (int k = 1; k <= n; ++k) { res *= (alpha - k + 1) / k; }
     return res;
 
@@ -60,12 +60,12 @@ static PyObject *numbers_power(PyObject *self, PyObject *args) {
 
 }
 
-static PyObject *numbers_intpower(PyObject *self, PyObject *args) {
+static PyObject *numbers_ipower(PyObject *self, PyObject *args) {
 
     const unsigned int b;
     const unsigned int p;
     if (!PyArg_ParseTuple(args, "II", &b, &p)) { return NULL; }
-    return PyLong_FromUnsignedLong(intpower(b, p));
+    return PyLong_FromUnsignedLong(ipower(b, p));
 
 }
 
