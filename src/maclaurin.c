@@ -258,3 +258,55 @@ double arctangenth(double x) {
 double arcsecanth(double x) { return arccosineh(1 / x); }
 double arccosecanth(double x) { return arccsecanth(1 / x); }
 double arccotangenth(double x) { return arctangenth(1 / x); }
+
+static PyObject *maclaurin_(double (*func)(double), PyObject *args) {
+
+    static double x;
+    if (!PyArg_ParseTuple(args, "d", &x)) { return NULL; }
+    return PyFloat_FromDouble(func(x));
+
+}
+
+static PyObject *maclaurina_(double (*func)(double, unsigned int), PyObject *args) {
+
+    static double x;
+    static unsigned int alpha;
+    if (!PyArg_ParseTuple(args, "dI", &x, &alpha)) { return NULL; }
+    return PyFloat_FromDouble(func(x, alpha));
+
+}
+
+static PyObject *maclaurin_exp(PyObject *self, PyObject *args) { return maclaurin_(exp, args); }
+static PyObject *maclaurin_ln(PyObject *self, PyObject *args) { return maclaurin_(ln, args); }
+static PyObject *maclaurin_geometric(PyObject *self, PyObject *args) { return maclaurina_(geometric, args); }
+static PyObject *maclaurin_binomial(PyObject *self, PyObject *args) { return maclaurina_(binomial, args); }
+static PyObject *maclaurin_root(PyObject *self, PyObject *args) { return maclaurina_(root, args); }
+static PyObject *maclaurin_invroot(PyObject *self, PyObject *args) { return maclaurina_(invroot, args); }
+
+static PyObject *maclaurin_sin(PyObject *self, PyObject *args) { return maclaurin_(sine, args); }
+static PyObject *maclaurin_cos(PyObject *self, PyObject *args) { return maclaurin_(cosine, args); }
+static PyObject *maclaurin_tan(PyObject *self, PyObject *args) { return maclaurin_(tangent, args); }
+static PyObject *maclaurin_sec(PyObject *self, PyObject *args) { return maclaurin_(secant, args); }
+static PyObject *maclaurin_csc(PyObject *self, PyObject *args) { return maclaurin_(cosecant, args); }
+static PyObject *maclaurin_cot(PyObject *self, PyObject *args) { return maclaurin_(cotangent, args); }
+
+static PyObject *maclaurin_arcsin(PyObject *self, PyObject *args) { return maclaurin_(arcsine, args); }
+static PyObject *maclaurin_arccos(PyObject *self, PyObject *args) { return maclaurin_(arccosine, args); }
+static PyObject *maclaurin_arctan(PyObject *self, PyObject *args) { return maclaurin_(arctangent, args); }
+static PyObject *maclaurin_arcsec(PyObject *self, PyObject *args) { return maclaurin_(arcsecant, args); }
+static PyObject *maclaurin_arccsc(PyObject *self, PyObject *args) { return maclaurin_(arccosecant, args); }
+static PyObject *maclaurin_arccot(PyObject *self, PyObject *args) { return maclaurin_(arccotangent, args); }
+
+static PyObject *maclaurin_sinh(PyObject *self, PyObject *args) { return maclaurin_(sineh, args); }
+static PyObject *maclaurin_cosh(PyObject *self, PyObject *args) { return maclaurin_(cosineh, args); }
+static PyObject *maclaurin_tanh(PyObject *self, PyObject *args) { return maclaurin_(tangenth, args); }
+static PyObject *maclaurin_sech(PyObject *self, PyObject *args) { return maclaurin_(secanth, args); }
+static PyObject *maclaurin_csch(PyObject *self, PyObject *args) { return maclaurin_(cosecanth, args); }
+static PyObject *maclaurin_coth(PyObject *self, PyObject *args) { return maclaurin_(cotangenth, args); }
+
+static PyObject *maclaurin_arcsinh(PyObject *self, PyObject *args) { return maclaurin_(arcsineh, args); }
+static PyObject *maclaurin_arccosh(PyObject *self, PyObject *args) { return maclaurin_(arccosineh, args); }
+static PyObject *maclaurin_arctanh(PyObject *self, PyObject *args) { return maclaurin_(arctangenth, args); }
+static PyObject *maclaurin_arcsech(PyObject *self, PyObject *args) { return maclaurin_(arcsecanth, args); }
+static PyObject *maclaurin_arccsch(PyObject *self, PyObject *args) { return maclaurin_(arccosecanth, args); }
+static PyObject *maclaurin_arccoth(PyObject *self, PyObject *args) { return maclaurin_(arccotangenth, args); }
