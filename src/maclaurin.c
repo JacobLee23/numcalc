@@ -6,373 +6,255 @@
 #include "../include/numbers.h"
 
 
-int exp_(double x, unsigned int n, double *term) {
+static double exponential_(
+    double x, unsigned int n, double term
+) { return (n == 0 ? 1 : x / n * term); }
 
-    *term = n == 0 ? 1 : x / n * *term;
-    return 0;
+double exponential(double x) {
 
-}
-
-
-double exp(double x) {
-    
     unsigned int n = 0;
     double term, res = 0.;
-    while (!exp_(x, n++, &term) && term != 0) { res += term; }
-
+    while ((term = exponential_(x, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+static double ln_(double x, unsigned int n, double term) {
 
-int ln_(double x, unsigned int n, double *term) {
-
-    if (x < -1) {
-        *term = n == 1 ? (1. / x + 1) : (1. / x + 1) * (n - 1) / n * *term;
-    } else if (-2 <= x < 0) {
-        *term = n == 1 ? -(x + 1) : (x + 1) * (n - 1) / n * *term;
-    } else if (0 < x <= 2) {
-        *term = n == 1 ? (x - 1) : -(x - 1) * (n - 1) / n * *term;
-    } else if (x > 2) {
-        *term = n == 1 ? -(1. / x - 1) : -(1. / x - 1) * (n - 1) / n * *term;
-    } else {
-        term = 0;
-        return -1;
-    }
-
-    return 0;
+    if (!(-1 < x <= 1)) { return DNAN; }
+    return (n == 1 ? x : -x * (n - 1) / n * term);
 
 }
-
 
 double ln(double x) {
 
+    if (x <= 0.) { return DNAN; }
     unsigned int n = 1;
     double term, res = 0.;
-    while (!ln_(x, n++, &term) && term != 0) { res += term; }
-
-    return res;
-
-}
-
-
-int geometric_(double x, unsigned int alpha, unsigned int n, double *term) {
-
-    if (alpha <= 0) {
-        term = 0;
-        return -1;
-    }
-
-    *term = n == (alpha - 1) ? alpha - 1 : n / (n - alpha + 1) * x * *term;
-    return 0;
+    while ((term = ln_((x <= 2 ? x - 1 : (1 - x) / x), n++, term)) != 0) { res += term; }
+    return (x <= 2 ? res : -res);
 
 }
 
+static double geometric_(double x, unsigned int alpha, unsigned int n, double term) {
+
+    if (!(-1 < x < 1)) { return DNAN; }
+    return (n == (alpha - 1) ? alpha - 1 : x * n / (n - alpha + 1) * term);
+
+}
 
 double geometric(double x, unsigned int alpha) {
 
+    if (x == 0.) { return DNAN; }
     unsigned int n = alpha - 1;
     double term, res = 0.;
-    while (!geometric_(x, alpha, n++, &term) && term != 0) { res += term; }
-
+    while ((term = geometric_(x + 1, alpha, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+static double binomial_(double x, unsigned int alpha, unsigned int n, double term) {
 
-int binomial_(double x, unsigned int alpha, unsigned int n, double *term) {
-
-    *term = n == 0 ? alpha * x : (alpha - n + 1) / n * *term;
-    return 0;
+    if (!(-1 < x < 1)) { return DNAN; }
+    return (n == 0 ? alpha * x : x * (alpha - n + 1) / n * term);
 
 }
-
 
 double binomial(double x, unsigned int alpha) {
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!binomial_(x, alpha, n++, &term) && term != 0) { res += term; }
-
+    while ((term = binomial_(x - 1, alpha, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+static double root_(
+    double x, unsigned int n, unsigned int alpha, double term
+) {
 
-int sqrt_(double x, unsigned int n, double *term) {
-
-    *term = n == 0 ? 1 : -x * (2 * n - 3) / (2 * n) * *term;
-    return 0;
+    if (!(-1 < x < 1)) { return DNAN; }
+    return (n == 0 ? 1 : x * (1 - (n - 1) * alpha) / (n * alpha) * term);
 
 }
 
+double root(double x, unsigned int alpha) {
 
-double sqrt(double x) {
+    if (x < 0.) { return DNAN; }
+    unsigned int n = 0;
+    double term, res = 0.;
+    while ((term = root_(x - 1, alpha, n++, term)) != 0) { res += term; }
+    return res;
+
+}
+
+static double invroot_(
+    double x, unsigned int n, unsigned int alpha, double term
+) {
+
+    if (!(-1 < x < 1)) { return DNAN; }
+    return (n == 0 ? 1 : x * (-1 - (n - 1) * alpha) / (n * alpha) * term);
+
+}
+
+double invroot(double x, unsigned int alpha) {
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!sqrt_(x, n++, &term) && term != 0) { res += term; }
-
+    while ((term = invroot_(x - 1, alpha, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+static double sine_(
+    double x, unsigned int n, double term
+) { return (n == 0 ? x : -power(x, 2) / ((2 * n) * (2 * n + 1)) * term); }
 
-int invsqrt_(double x, unsigned int n, double *term) {
-
-    *term = n == 0 ? 1 : -x * (2 * n - 1) / (2 * n) * *term;
-    return 0;
-
-}
-
-
-double invsqrt(double x) {
+double sine(double x) {
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!invsqrt_(x, n++, &term) && term != 0) { res += term; }
-
+    while ((term = sine_(x, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+static double cosine_(
+    double x, unsigned int n, double term
+) { return (n == 0 ? 1 : -power(x, 2) / ((2 * n) * (2 * n - 1)) * term); }
 
-int sin_(double x, unsigned int n, double *term) {
-
-    *term = n == 0 ? x : -(x * x) / ((2 * n) * (2 * n + 1)) * *term;
-    return 0;
-
-}
-
-
-double sin(double x) {
+double cosine(double x) {
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!sin_(x, n++, &term) && term != 0) { res += term; }
-
+    while ((term = cosine_(x, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+double tangent(double x) { return sine(x) / cosine(x); }
+double secant(double x) { return 1 / cosine(x); }
+double cosecant(double x) { return 1 / sine(x); }
+double cotangent(double x) { return sine(x) / cosine(x); }
 
-int cos_(double x, unsigned int n, double *term) {
+static double arcsine_(double x, unsigned int n, double term) {
 
-    *term = n == 0 ? 1 : -(x * x) / ((2 * n) * (2 * n - 1)) * *term;
-    return 0;
+    if (!(-1 <= x <= 1)) { return DNAN; }
+    return (
+        n == 0 ? x : power(x, 2) * (
+            ((2 * n) * ipower(2 * n - 1, 2)) / (4 * ipower(n, 2) * (2 * n + 1))
+        ) * term
+    );
 
 }
 
+double arcsine(double x) {
 
-double cos(double x) {
+    if (!(-1 <= x <= 1)) { return DNAN; }
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!cos_(x, n++, &term) && term != 0) { res += term; }
-
+    while ((term = arcsine_(x, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+double arccosine(double x) { return arcsine(1) - arcsine(x); }
 
-double tan(double x) { return sin(x) / cos(x); }
+static double arctangent_(double x, unsigned int n, double term) {
 
-
-double sec(double x) { return 1 / cos(x); }
-
-
-double csc(double x) { return 1 / sin(x); }
-
-
-double cot(double x) { return cos(x) / sin(x); }
-
-
-int arcsin_(double x, unsigned int n, double *term) {
-
-    if (!(-1 <= x <= 1)) {
-        term = 0;
-        return -1;
-    }
-
-    *term = n == 0 ? x : ((2 * n - 1) * (2 * n) * (2 * n - 1) * (x * x)) / (4 * (n * n) * (2 * n + 1));
-    return 0;
+    if (!(-1 <= x <= 1)) { return DNAN; }
+    return (n == 0 ? x : -power(x, 2) * (2 * n - 1) / (2 * n + 1) * term);
 
 }
 
-
-double arcsin(double x) {
+double arctangent(double x) {
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!arcsin_(x, n++, &term) && term != 0) { res += term; }
-
-    return res;
+    while ((term = arctangent_(x, n++, term)) != 0) { res += term; }
 
 }
 
+double arcsecant(double x) { return arccosine(1 / x); }
+double arccosecant(double x) { return arcsine(1 / x); }
+double arccotangent(double x) { return arctangent(1 / x); }
 
-double arccos(double x) { return arcsin(1) - arcsin(x); }
+static double sineh_(
+    double x, unsigned int n, double term
+) { return (n == 0 ? x: power(x, 2) / ((2 * n) * (2 * n + 1)) * term); }
 
-
-int arctan_(double x, unsigned int n, double *term) {
-
-    if (!(-1 <= x <= 1)) {
-        term = 0;
-        return -1;
-    }
-
-    *term = n == 0 ? x : -((2 * n - 1) * (x * x)) / (2 * n + 1);
-    return 0;
-
-}
-
-
-double arctan(double x) {
+double sineh(double x) {
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!arctan_(x, n++, &term) && term != 0) { res += term; }
-
+    while ((term = sineh_(x, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+static double cosineh_(
+    double x, unsigned int n, double term
+) { return (n == 0 ? 1 : power(x, 2) / ((2 * n) * (2 * n - 1)) * term); }
 
-double arcsec(double x) { return arccos(1 / x); }
-
-
-double arccsc(double x) { return arcsin(1 / x); }
-
-
-double arccot(double x) { return arctan(1 / x); }
-
-
-int sinh_(double x, unsigned int n, double *term) {
-
-    *term = n == 0 ? x : (x * x) / ((2 * n) * (2 * n + 1));
-    return 0;
-
-}
-
-
-double sinh(double x) {
+double cosineh(double x) {
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!sinh_(x, n++, &term) && term != 0) { res += term; }
-
+    while ((term = cosineh_(x, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
+double tangenth(double x) { return sineh(x) / cosineh(x); }
+double secanth(double x) { return 1 / cosineh(x); }
+double cosecanth(double x) { return 1 / secanth(x); }
+double cotangenth(double x) { return cosineh(x) / sineh(x); }
 
-int cosh_(double x, unsigned int n, double *term) {
+static double arcsineh_(double x, unsigned int n, double term) {
 
-    *term = n == 0 ? 1 : (x * x) / ((2 * n - 1) * (2 * n));
-    return 0;
+    if (!(-1 <= x <= 1)) { return DNAN; }
+    return (
+        n == 0 ? x : -power(x, 2) * (
+            (2 * n) * ipower(2 * n - 1, 2)) / (4 * ipower(n, 2) * (2 * n + 1)
+        ) * term
+    );
 
 }
 
+double arcsineh(double x) {
 
-double cosh(double x) {
+    if (!(-1 <= x <= 1)) { return DNAN; }
+    unsigned int n = 0;
+    double term, res = 0.;
+    while ((term = arcsineh_(x, n++, term)) != 0) { res += term; }
+    return res;
+
+}
+
+double arccosineh(double x) {
+
+    double res = arcsinh(root(power(x, 2), 2) - 1);
+    return (res >= 0. ? res : -res);
+
+}
+
+static double arctangenth_(double x, unsigned int n, double term) {
+
+    if (!(-1 < x < 1)) { return DNAN; }
+    return (n == 0 ? x : power(x, 2) * (2 * n - 1) / (2 * n + 1) * term);
+
+}
+
+double arctangenth(double x) {
 
     unsigned int n = 0;
     double term, res = 0.;
-    while (!cosh_(x, n++, &term) && term != 0) { res += term; }
-
+    while ((term = arctangenth_(x, n++, term)) != 0) { res += term; }
     return res;
 
 }
 
-
-double tanh(double x) { return sinh(x) / cosh(x); }
-
-
-double sech(double x) { return 1 / cosh(x); }
-
-
-double csch(double x) { return 1 / sech(x); }
-
-
-double coth(double x) { return cosh(x) / sinh(x); }
-
-
-int arcsinh_(double x, unsigned int n, double *term) {
-
-    if (!(-1 <= x <= 1)) {
-        term = 0;
-        return -1;
-    }
-
-    *term = n == 0 ? x : -((2 * n - 1) * (2 * n) * (2 * n - 1) * (x * x)) / (4 * (n * n) * (2 * n + 1));
-    return 0;
-
-}
-
-
-double arcsinh(double x) {
-
-    unsigned int n = 0;
-    double term, res = 0.;
-    while (!arcsinh_(x, n++, &term) && term != 0) { res += term; }
-
-    return res;
-
-}
-
-
-int arccosh_(double x, unsigned int n, double *term) {
-
-    if (!(x >= 1)) {
-        term = 0;
-        return -1;
-    }
-
-    *term = n == 1 ? 1 / (4 * (x * x)) : ((2 * n - 1) * (2 * n - 2)) / (4 * (n * n) * (x * x)) * *term;
-    return 0;
-
-}
-
-
-double arccosh(double x) {
-
-    unsigned int n = 1;
-    double term, res = 0.;
-    while (!arccosh_(x, n++, &term) && term != 0) { res += term; }
-
-    return ln(2 * x) - res;
-
-}
-
-
-int arctanh_(double x, unsigned int n, double *term) {
-
-    if (!(-1 < x < 1)) {
-        term = 0;
-        return -1;
-    }
-
-    *term = n == 0 ? x : ((2 * n - 1) * (x * x)) / (2 * n + 1);
-    return 0;
-
-}
-
-
-double arctanh(double x) {
-
-    unsigned int n = 0;
-    double term, res = 0.;
-    while (!arctanh_(x, n++, &term) && term != 0) { res += term; }
-
-    return res;
-
-}
-
-
-double arcsech(double x) { return arccosh(1 / x); }
-
-
-double arccsch(double x) { return arccsch(1 / x); }
-
-
-double arccoth(double x) { return arctanh(1 / x); }
+double arcsecanth(double x) { return arccosineh(1 / x); }
+double arccosecanth(double x) { return arccsecanth(1 / x); }
+double arccotangenth(double x) { return arctangenth(1 / x); }

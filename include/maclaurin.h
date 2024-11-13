@@ -2,37 +2,37 @@
  * Maclaurin series computation
  */
 
-double exp(double x);
+double exponential(double x);
 double ln(double x);
 double geometric(double x, unsigned int alpha);
 double binomial(double x, unsigned int alpha);
-double sqrt(double x);
-double invsqrt(double x);
+double root(double x, unsigned int alpha);
+double invroot(double x, unsigned int alpha);
 
-double sin(double x);
-double cos(double x);
-double tan(double x);
-double sec(double x);
-double csc(double x);
-double cot(double x);
+double sine(double x);
+double cosine(double x);
+double tangent(double x);
+double secant(double x);
+double cosecant(double x);
+double cotangent(double x);
 
-double arcsin(double x);
-double arccos(double x);
-double arctan(double x);
-double arcsec(double x);
-double arccsc(double x);
-double arccot(double x);
+double arcsine(double x);
+double arccosine(double x);
+double arctangent(double x);
+double arcsecant(double x);
+double arccosecant(double x);
+double arccotangent(double x);
 
-double sinh(double x);
-double cosh(double x);
-double tanh(double x);
-double sech(double x);
-double csch(double x);
-double coth(double x);
+double sineh(double x);
+double cosineh(double x);
+double tangenth(double x);
+double secanth(double x);
+double cosecanth(double x);
+double cotangenth(double x);
 
-double arcsinh(double x);
+double arcsineh(double x);
 double arccosh(double x);
-double arctanh(double x);
-double arcsech(double x);
-double arccsch(double x);
-double arccoth(double x);
+double arctangenth(double x);
+double arcsecanth(double x);
+double arccosecanth(double x);
+double arccotangenth(double x);
