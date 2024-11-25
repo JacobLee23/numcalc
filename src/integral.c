@@ -197,3 +197,65 @@ short int trapezoidal(RealFunction f, struct Interval **intervals, unsigned int 
     return 0;
 
 }
+
+static PyObject *integral_delta(PyObject *self, PyObject *args) {
+
+    PyObject *ob_intervals;
+    if (!PyArg_ParseTuple(args, "OI", &ob_intervals)) { return NULL; }
+
+    if (!PySequence_Check(ob_intervals)) {
+        PyErr_SetString(PyExc_TypeError, "Expected a sequence of 'Interval' objects");
+        return NULL;
+    }
+
+    unsigned int d = PySequence_Size(ob_intervals);
+
+    struct Interval **intervals;
+    if (!(intervals = (struct Interval **)calloc(d, sizeof(struct Interval *)))) {
+        PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
+        return NULL;
+    }
+
+    for (unsigned int i = 0; i < d; ++i) {
+
+        PyObject *item = PySequence_GetItem(ob_intervals, i);
+        if (!PyObject_TypeCheck(item, &IntervalType)) {
+
+            PyErr_SetString(PyExc_TypeError, "Expected a sequence of 'Interval' objects");
+            Py_XDECREF(item);
+
+            for (unsigned int j = 0; j < i; ++j) { free(*(intervals + j)); }
+            free(intervals);
+
+            return NULL;
+
+        }
+
+        if (!(*(intervals + i) = (struct Interval *)calloc(1, sizeof(struct Interval)))) {
+
+            PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
+            Py_DECREF(item);
+
+            for (unsigned int j = 0; j < i; ++j) { free(*(intervals + j)); }
+            free(intervals);
+
+            return NULL;
+
+        }
+
+        IntervalObject *pyinterval = (IntervalObject *)item;
+        (*(intervals + i))->lower = pyinterval->lower;
+        (*(intervals + i))->upper = pyinterval->upper;
+        (*(intervals + i))->n = pyinterval->n;
+        Py_DECREF(item);
+
+    }
+
+    double result = delta(intervals, d);
+
+    for (unsigned int i = 0; i < d; ++i) { free(*(intervals + i)); }
+    free(intervals);
+
+    return PyFloat_FromDouble(result);
+
+}
