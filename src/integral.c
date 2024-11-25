@@ -19,7 +19,7 @@ double delta(struct Interval **intervals, unsigned int d) {
 
 }
 
-int endpoint(struct Interval *interval, unsigned int i, double *x) {
+short endpoint(struct Interval *interval, unsigned int i, double *x) {
 
     if (!(0 <= i <= interval->n + 1)) { return -1; }
 
@@ -30,7 +30,7 @@ int endpoint(struct Interval *interval, unsigned int i, double *x) {
 
 }
 
-int left(struct Interval *interval, unsigned int i, double *x) {
+short left(struct Interval *interval, unsigned int i, double *x) {
 
     if (!(0 <= i <= interval->n)) { return -1; }
 
@@ -41,7 +41,7 @@ int left(struct Interval *interval, unsigned int i, double *x) {
 
 }
 
-int right(struct Interval *interval, unsigned int i, double *x) {
+short right(struct Interval *interval, unsigned int i, double *x) {
 
     if (!(0 <= i <= interval->n)) { return -1; }
 
@@ -52,7 +52,7 @@ int right(struct Interval *interval, unsigned int i, double *x) {
 
 }
 
-int midpoint(struct Interval *interval, unsigned int i, double *x) {
+short midpoint(struct Interval *interval, unsigned int i, double *x) {
 
     if (!(0 <= i <= interval->n)) { return -1; }
 
@@ -63,7 +63,7 @@ int midpoint(struct Interval *interval, unsigned int i, double *x) {
 
 }
 
-static unsigned short int inbounds(struct Interval **intervals, unsigned int radix, unsigned int d) {
+static unsigned short inbounds(struct Interval **intervals, unsigned int radix, unsigned int d) {
 
     unsigned int bound = 1;
     for (int i = 0; i < d; ++i) { bound *= (*(intervals + i))->n; }
@@ -98,7 +98,7 @@ static unsigned int *unpack(struct Interval **intervals, unsigned int radix, uns
 
 }
 
-static short int xvalue(
+static short xvalue(
     struct Interval **intervals, RiemannRule *rules, unsigned int radix, unsigned int d,
     double *x
 ) {
@@ -114,7 +114,7 @@ static short int xvalue(
 
 }
 
-short int riemann(RealFunction f, struct Interval **intervals, RiemannRule *rules, unsigned int d, double *res) {
+short riemann(RealFunction f, struct Interval **intervals, RiemannRule *rules, unsigned int d, double *res) {
 
     double *x;
     if (!(x = (double *)calloc(d, sizeof(double)))) {
@@ -146,7 +146,7 @@ short int riemann(RealFunction f, struct Interval **intervals, RiemannRule *rule
 
 }
 
-short int trapezoidal(RealFunction f, struct Interval **intervals, unsigned int d, double *res) {
+short trapezoidal(RealFunction f, struct Interval **intervals, unsigned int d, double *res) {
 
     RiemannRule *rules;
     if (!(rules = (RiemannRule *)calloc(d, sizeof(RiemannRule)))) {
@@ -289,7 +289,7 @@ static PyObject *riemann_rule(PyObject *self, PyObject *args, RiemannRule rule) 
         return NULL;
     }
 
-    int err;
+    short err;
     if ((err = rule(interval, i, x)) == -1) {
         PyErr_SetString(PyExc_ValueError, "Index of bounds of interval");
         free(interval);

@@ -16,16 +16,16 @@ struct Interval {
 
 double delta(struct Interval **intervals, unsigned int d);
 
-typedef int (*RiemannRule)(struct Interval *interval, unsigned int i, double *x);
-int endpoint(struct Interval *interval, unsigned int i, double *x);
-int left(struct Interval *interval, unsigned int i, double *x);
-int right(struct Interval *interval, unsigned int i, double *x);
-int midpoint(struct Interval *interval, unsigned int i, double *x);
+typedef short (*RiemannRule)(struct Interval *interval, unsigned int i, double *x);
+short endpoint(struct Interval *interval, unsigned int i, double *x);
+short left(struct Interval *interval, unsigned int i, double *x);
+short right(struct Interval *interval, unsigned int i, double *x);
+short midpoint(struct Interval *interval, unsigned int i, double *x);
 
-short int riemann(
+short riemann(
     RealFunction f, struct Interval **intervals, RiemannRule *rules, unsigned int d, double *res
 );
-short int trapezoidal(
+short trapezoidal(
     RealFunction f, struct Interval **intervals, unsigned int d, double *res
 );
 
