@@ -208,7 +208,7 @@ static PyObject *integral_delta(PyObject *self, PyObject *args) {
         return NULL;
     }
 
-    unsigned int d = PySequence_Size(ob_intervals);
+    unsigned int d = (unsigned int)PySequence_Size(ob_intervals);
 
     struct Interval **intervals;
     if (!(intervals = (struct Interval **)calloc(d, sizeof(struct Interval *)))) {
@@ -259,3 +259,64 @@ static PyObject *integral_delta(PyObject *self, PyObject *args) {
     return PyFloat_FromDouble(result);
 
 }
+
+static PyObject *riemann_rule(PyObject *self, PyObject *args, RiemannRule rule) {
+
+    PyObject *ob_interval;
+    unsigned int i;
+    if (!PyArg_ParseTuple(args, "OI", &ob_interval, &i)) { return NULL; }
+
+    if (!PyObject_TypeCheck(ob_interval, &IntervalType)) {
+        PyErr_SetString(PyExc_TypeError, "Expected an 'Interval' object");
+        return NULL;
+    }
+    struct Interval *py_interval = (struct Interval *)ob_interval;
+
+    struct Interval *interval;
+    if (!(interval = (struct Interval *)malloc(sizeof(struct Interval)))) {
+        PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
+        return NULL;
+    }
+
+    interval->lower = py_interval->lower;
+    interval->upper = py_interval->upper;
+    interval->n = py_interval->n;
+
+    double *x;
+    if (!(x = (double *)malloc(sizeof(double)))) {
+        PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
+        free(interval);
+        return NULL;
+    }
+
+    int err;
+    if ((err = rule(interval, i, x)) == -1) {
+        PyErr_SetString(PyExc_ValueError, "Index of bounds of interval");
+        free(interval);
+        free(x);
+        return NULL;
+    }
+
+    PyObject *res = PyFloat_FromDouble(*x);
+    free(interval);
+    free(x);
+
+    return res;
+
+}
+
+static PyObject *integral_endpoint(
+    PyObject *self, PyObject *args
+) { return riemann_rule(self, args, endpoint); }
+
+static PyObject *integral_left(
+    PyObject *self, PyObject *args
+) { return riemann_rule(self, args, left); }
+
+static PyObject *integral_right(
+    PyObject *self, PyObject *args
+) { return riemann_rule(self, args, right); }
+
+static PyObject *integral_midpoint(
+    PyObject *self, PyObject *args
+) { return riemman_rule(self, args, midpoint); }
