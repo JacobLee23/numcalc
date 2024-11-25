@@ -19,7 +19,6 @@ double delta(struct Interval **intervals, unsigned int d) {
 
 }
 
-
 int endpoint(struct Interval *interval, unsigned int i, double *x) {
 
     if (!(0 <= i <= interval->n + 1)) { return -1; }
@@ -30,7 +29,6 @@ int endpoint(struct Interval *interval, unsigned int i, double *x) {
     return 0;
 
 }
-
 
 int left(struct Interval *interval, unsigned int i, double *x) {
 
@@ -43,7 +41,6 @@ int left(struct Interval *interval, unsigned int i, double *x) {
 
 }
 
-
 int right(struct Interval *interval, unsigned int i, double *x) {
 
     if (!(0 <= i <= interval->n)) { return -1; }
@@ -54,7 +51,6 @@ int right(struct Interval *interval, unsigned int i, double *x) {
     return 0;
 
 }
-
 
 int midpoint(struct Interval *interval, unsigned int i, double *x) {
 
@@ -67,7 +63,6 @@ int midpoint(struct Interval *interval, unsigned int i, double *x) {
 
 }
 
-
 static unsigned short int inbounds(struct Interval **intervals, unsigned int radix, unsigned int d) {
 
     unsigned int bound = 1;
@@ -76,7 +71,6 @@ static unsigned short int inbounds(struct Interval **intervals, unsigned int rad
     return 0 <= radix <= bound;
 
 }
-
 
 static unsigned int increment(struct Interval **intervals, unsigned int radix, unsigned int d) {
 
@@ -89,7 +83,6 @@ static unsigned int increment(struct Interval **intervals, unsigned int radix, u
     return (msd >= base - 1 ? 0 : (msd + 1) * base + increment(intervals + 1, radix % base, d - 1));
 
 }
-
 
 static unsigned int *unpack(struct Interval **intervals, unsigned int radix, unsigned int d) {
 
@@ -104,7 +97,6 @@ static unsigned int *unpack(struct Interval **intervals, unsigned int radix, uns
     return index;
 
 }
-
 
 static short int xvalue(
     struct Interval **intervals, RiemannRule *rules, unsigned int radix, unsigned int d,
@@ -122,8 +114,7 @@ static short int xvalue(
 
 }
 
-
-short int riemann_sum(RealFunction f, struct Interval **intervals, RiemannRule *rules, unsigned int d, double *res) {
+short int riemann(RealFunction f, struct Interval **intervals, RiemannRule *rules, unsigned int d, double *res) {
 
     double *x;
     if (!(x = (double *)calloc(d, sizeof(double)))) {
@@ -155,8 +146,7 @@ short int riemann_sum(RealFunction f, struct Interval **intervals, RiemannRule *
 
 }
 
-
-short int trapezoidal_rule(RealFunction f, struct Interval **intervals, unsigned int d, double *res) {
+short int trapezoidal(RealFunction f, struct Interval **intervals, unsigned int d, double *res) {
 
     RiemannRule *rules;
     if (!(rules = (RiemannRule *)calloc(d, sizeof(RiemannRule)))) {
