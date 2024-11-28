@@ -8,20 +8,18 @@
 #include "../include/numbers.h"
 
 
-double *duplicatex_(double *x, unsigned int d) {
+static double *copyx(double *x, unsigned int d) {
 
     double *x_;
     if (!(x_ = (double *)calloc(d, sizeof(double)))) { return NULL; }
-    while (*x_++ = *x++);
-
+    for (int i = 0; i < d; ++i) { *(x_ + i) = *(x + 1); }
     return x_;
 
 }
 
-
 double *forward_first(RealFunction f, double *x, double h, unsigned int d) {
 
-    double *x1 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
@@ -40,11 +38,10 @@ double *forward_first(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-
 double *forward_second(RealFunction f, double *x, double h, unsigned int d) {
 
-    double *x1 = duplicatex_(x, d);
-    double *x2 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
+    double *x2 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
@@ -62,10 +59,9 @@ double *forward_second(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-
 double *forward_nth(RealFunction f, double *x, double h, unsigned int d, unsigned int n) {
 
-    double *x1 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
@@ -89,10 +85,9 @@ double *forward_nth(RealFunction f, double *x, double h, unsigned int d, unsigne
 
 }
 
-
 double *backward_first(RealFunction f, double *x, double h, unsigned int d) {
 
-    double *x1 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
@@ -110,11 +105,10 @@ double *backward_first(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-
 double *backward_second(RealFunction f, double *x, double h, unsigned int d) {
 
-    double *x1 = duplicatex_(x, d);
-    double *x2 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
+    double *x2 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
@@ -133,10 +127,9 @@ double *backward_second(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-
 double *backward_nth(RealFunction f, double *x, double h, unsigned int n, unsigned int d) {
 
-    double *x1 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
@@ -160,11 +153,10 @@ double *backward_nth(RealFunction f, double *x, double h, unsigned int n, unsign
 
 }
 
-
 double *central_first(RealFunction f, double *x, double h, unsigned int d) {
 
-    double *x1 = duplicatex_(x, d);
-    double *x2 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
+    double *x2 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
@@ -183,11 +175,10 @@ double *central_first(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-
 double *central_second(RealFunction f, double *x, double h, unsigned int d) {
 
-    double *x1 = duplicatex_(x, d);
-    double *x2 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
+    double *x2 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
@@ -206,10 +197,9 @@ double *central_second(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-
 double *central_nth(RealFunction f, double *x, double h, unsigned int n, unsigned int d) {
 
-    double *x1 = duplicatex_(x, d);
+    double *x1 = copyx(x, d);
     double *finite_differences;
     if (!(finite_differences = (double *)calloc(d, sizeof(double)))) { return NULL; }
 
