@@ -7,6 +7,7 @@
 
 #define DNAN 0. / 0.
 
+
 double power(double b, unsigned int p);
 unsigned long ipower(unsigned int b, unsigned int p);
 unsigned long factorial(unsigned int n);
