@@ -223,8 +223,7 @@ double *central_nth(RealFunction f, double *x, double h, unsigned int n, unsigne
 
 }
 
-
-double *difference_quotient(
+double *dquotient(
     RealFunction f, double *x, double h, unsigned int n, unsigned int d,
     struct FiniteDifference *findiff
 ) {
@@ -248,5 +247,62 @@ double *difference_quotient(
     }
 
     return finite_differences;
+
+}
+
+static PyObject *differential_dquotient(PyObject *self, PyObject *args) {
+
+    PyObject *ob_f;
+    PyObject *ob_x;
+    double h;
+    unsigned int n;
+    PyObject *ob_findiff;
+    if (!PyArg_ParseTuple(args, "OOdIO", &ob_f, &ob_x, &h, &n, &ob_findiff)) { return NULL; }
+
+    if (!PyCallable_Check(ob_f)) {
+        PyErr_SetString(PyExc_TypeError, "Expected a callable object");
+        return NULL;
+    }
+
+    if (!PySequence_Check(ob_x)) {
+        PyErr_SetString(PyExc_TypeError, "Expected a sequence of 'float' objects");
+        return NULL;
+    }
+
+    Py_ssize_t size_x;
+    if ((size_x = PySequence_Size(ob_x)) == -1) {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to determine sequence length");
+        return NULL;
+    }
+    unsigned int d = (unsigned int)size_x;
+
+    double *x;
+    if (!(x = (double *)calloc(d, sizeof(double)))) {
+        PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
+        return NULL;
+    }
+
+    for (unsigned int i = 0; i < d; ++i) {
+
+        PyObject *item;
+        if (!(item = PySequence_GetItem(ob_x, i))) {
+            PyErr_SetString(PyExc_TypeError, "Expected a sequence of 'float' objects");
+            PY_XDECREF(item);
+            free(x);
+            return NULL;
+        }
+
+        if (!PyFloat_Check(item)) {
+            PyErr_SetString(PyExc_TypeError, "Expected a sequence of 'float' objects");
+            PY_DECREF(item);
+            free(x);
+            return NULL;
+        }
+
+        *(x + i) = PyFloat_AsDouble(item);
+
+        Py_DECREF(item);
+
+    }
 
 }

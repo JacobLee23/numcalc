@@ -30,7 +30,20 @@ struct FiniteDifference forward = { forward_first, forward_second, forward_nth }
 struct FiniteDifference backward = { backward_first, backward_second, backward_nth };
 struct FiniteDifference central = { central_first, central_second, central_nth };
 
-double *difference_quotient(
+double *dquotient(
     RealFunction f, double *x, double h, unsigned int n, unsigned int d,
     struct FiniteDifference *findiff
 );
+
+static PyObject *differential_dquotient(PyObject *self, PyObject *args);
+
+static PyMethodDef DifferentialMethods[] = {
+    {"dquotient", differential_dquotient, METH_VARARGS, NULL},
+    {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef differential_module = {
+    PyModuleDef_HEAD_INIT, "differential", NULL, -1, DifferentialMethods
+};
+
+PyMODINIT_FUNC PyInit_differential() { return PyModuleCreate_(&differential_module); }
