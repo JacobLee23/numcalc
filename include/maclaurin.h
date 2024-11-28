@@ -109,8 +109,8 @@ static PyMethodDef MaclaurinMethods[] = {
     {NULL, NULL, 0, NULL}
 };
 
-static struct PyModuleDef maclaurinmodule = {
+static struct PyModuleDef maclaurin_module = {
     PyModuleDef_HEAD_INIT, "maclaurin", NULL, -1, MaclaurinMethods
 };
 
-PyMODINIT_FUNC PyInit_maclaurin() { return PyModule_Create(&maclaurinmodule); }
+PyMODINIT_FUNC PyInit_maclaurin() { return PyModule_Create(&maclaurin_module); }
