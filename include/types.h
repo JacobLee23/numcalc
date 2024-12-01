@@ -2,6 +2,8 @@
  * Type definitions for mathematical entities
  */
 
+#define PY_SSIZE_T_CLEAR
+#include <Python.h>
 #include <stdbool.h>
 
 struct RealFunction {
@@ -11,3 +13,5 @@ struct RealFunction {
         PyObject *py;
     } f;
 };
+
+struct RealFunction *parse_function(PyObject *ob_f);
