@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 
+#include "../include/functions.h"
 #include "../include/integral.h"
 
 
@@ -114,7 +115,7 @@ static short xvalue(
 
 }
 
-short riemann(RealFunction f, struct Interval **intervals, RiemannRule *rules, unsigned int d, double *res) {
+short riemann(struct RealFunction *f, struct Interval **intervals, RiemannRule *rules, unsigned int d, double *res) {
 
     double *x;
     if (!(x = (double *)calloc(d, sizeof(double)))) {
@@ -135,7 +136,7 @@ short riemann(RealFunction f, struct Interval **intervals, RiemannRule *rules, u
             return -1;
         }
 
-        *res += dv * f(x, d);
+        *res += dv * (f->c ? f->f.c(x, d) : eval(f->f.py, x, d));
         radix = increment(intervals, radix, d);
 
     }
@@ -146,7 +147,7 @@ short riemann(RealFunction f, struct Interval **intervals, RiemannRule *rules, u
 
 }
 
-short trapezoidal(RealFunction f, struct Interval **intervals, unsigned int d, double *res) {
+short trapezoidal(struct RealFunction *f, struct Interval **intervals, unsigned int d, double *res) {
 
     RiemannRule *rules;
     if (!(rules = (RiemannRule *)calloc(d, sizeof(RiemannRule)))) {
@@ -187,7 +188,7 @@ short trapezoidal(RealFunction f, struct Interval **intervals, unsigned int d, d
             }
         }
 
-        *res += dv * (1 << (d - nborders)) * f(x, d) / nlegs;
+        *res += dv * (1 << (d - nborders)) * (f->c ? f->f.c(x, d) : eval(f->f.py, x, d)) / nlegs;
         radix = increment(intervals, radix, d);
 
     }

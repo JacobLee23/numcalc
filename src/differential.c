@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "../include/differential.h"
+#include "../include/functions.h"
 #include "../include/numbers.h"
 
 
@@ -17,7 +18,7 @@ static double *copyx(double *x, unsigned int d) {
 
 }
 
-double *forward_first(RealFunction f, double *x, double h, unsigned int d) {
+double *forward_first(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -27,7 +28,13 @@ double *forward_first(RealFunction f, double *x, double h, unsigned int d) {
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) += h;
-        *(finite_differences + i) = f(x1, d) - f(x, d);
+        *(finite_differences + i) = (
+            f->c ? (
+                f->f.c(x1, d) - f->f.c(x, d)
+            ) : (
+                eval(f->f.py, x1, d) - eval(f->f.py, x, d)
+            )
+        );
         *(x1 + i) -= h;
 
     }
@@ -38,7 +45,7 @@ double *forward_first(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-double *forward_second(RealFunction f, double *x, double h, unsigned int d) {
+double *forward_second(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -48,7 +55,13 @@ double *forward_second(RealFunction f, double *x, double h, unsigned int d) {
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) += 2 * h, *(x2 + i) += h;
-        *(finite_differences + i) = f(x1, d) - 2 * f(x2, d) + f(x, d);
+        *(finite_differences + i) = (
+            f->c ? (
+                f->f.c(x1, d) - 2 * f->f.c(x2, d) + f->f.c(x, d)
+            ) : (
+                eval(f->f.py, x1, d) - 2 * eval(f->f.py, x2, d) + eval(f->f.py, x, d)
+            )
+        );
         *(x1 + i) -= 2 * h, *(x2 + i) -= h;
     }
 
@@ -59,7 +72,7 @@ double *forward_second(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-double *forward_nth(RealFunction f, double *x, double h, unsigned int d, unsigned int n) {
+double *forward_nth(struct RealFunction *f, double *x, double h, unsigned int d, unsigned int n) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -72,7 +85,9 @@ double *forward_nth(RealFunction f, double *x, double h, unsigned int d, unsigne
         for (int k = 0; k <= n; ++k) {
 
             *(x1 + i) += k * h;
-            *(finite_differences + i) += (n - k % 2 == 0 ? 1 : -1) * binom(n, k) * f(x1, d);
+            *(finite_differences + i) += (n - k % 2 == 0 ? 1 : -1) * binom(n, k) * (
+                f->c ? f->f.c(x1, d) : eval(f->f.py, x1, d)
+            );
             *(x1 + i) -= k * h;
 
         }
@@ -85,7 +100,7 @@ double *forward_nth(RealFunction f, double *x, double h, unsigned int d, unsigne
 
 }
 
-double *backward_first(RealFunction f, double *x, double h, unsigned int d) {
+double *backward_first(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -94,7 +109,13 @@ double *backward_first(RealFunction f, double *x, double h, unsigned int d) {
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) -= h;
-        *(finite_differences + i) = f(x, d) - f(x1, d);
+        *(finite_differences + i) = (
+            f->c ? (
+                f->f.c(x, d) - f->f.c(x1, d)
+            ) : (
+                eval(f->f.py, x, d) - eval(f->f.py, x1, d)
+            )
+        );
         *(x1 + i) += h;
 
     }
@@ -105,7 +126,7 @@ double *backward_first(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-double *backward_second(RealFunction f, double *x, double h, unsigned int d) {
+double *backward_second(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -115,7 +136,13 @@ double *backward_second(RealFunction f, double *x, double h, unsigned int d) {
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) -= h, *(x2 + i) -= 2 * h;
-        *(finite_differences + i) = f(x, d) - 2 * f(x1, d) + f(x2, d);
+        *(finite_differences + i) = (
+            f->c ? (
+                f->f.c(x, d) - 2 * f->f.c(x1, d) + f->f.c(x2, d)
+            ) : (
+                eval(f->f.py, x, d) - 2 * eval(f->f.py, x1, d) + eval(f->f.py, x2, d)
+            )
+        );
         *(x1 + i) += h, *(x2 + i) += 2 * h;
 
     }
@@ -127,7 +154,7 @@ double *backward_second(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-double *backward_nth(RealFunction f, double *x, double h, unsigned int n, unsigned int d) {
+double *backward_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -140,7 +167,9 @@ double *backward_nth(RealFunction f, double *x, double h, unsigned int n, unsign
         for (int k = 0; k <= n; ++i) {
 
             *(x1 + i) -= k * h;
-            *(finite_differences + i) += (i % 2 == 0 ? 1 : -1) * binom(n, k) * f(x1, d);
+            *(finite_differences + i) += (i % 2 == 0 ? 1 : -1) * binom(n, k) * (
+                f->c ? f->f.c(x1, d) : eval(f->f.py, x1, d)
+            );
             *(x1 + i) += k * h;
 
         }
@@ -153,7 +182,7 @@ double *backward_nth(RealFunction f, double *x, double h, unsigned int n, unsign
 
 }
 
-double *central_first(RealFunction f, double *x, double h, unsigned int d) {
+double *central_first(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -163,7 +192,13 @@ double *central_first(RealFunction f, double *x, double h, unsigned int d) {
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) += h / 2, *(x2 + i) -= h / 2;
-        *(finite_differences + i) = f(x1, d) - f(x2, d);
+        *(finite_differences + i) = (
+            f->c ? (
+                f->f.c(x1, d) - f->f.c(x2, d)
+            ) : (
+                eval(f->f.py, x1, d) - eval(f->f.py, x2, d)
+            )
+        );
         *(x1 + i) -= h / 2, *(x2 + i) += h / 2;
 
     }
@@ -175,7 +210,7 @@ double *central_first(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-double *central_second(RealFunction f, double *x, double h, unsigned int d) {
+double *central_second(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -185,7 +220,13 @@ double *central_second(RealFunction f, double *x, double h, unsigned int d) {
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) += h, *(x2 + i) -= h;
-        *(finite_differences + i) = f(x1, d) - 2 * f(x, d) + f(x2, d);
+        *(finite_differences + i) = (
+            f->c ? (
+                f->f.c(x1, d) - 2 * f->f.c(x, d) + f->f.c(x2, d)
+            ) : (
+                eval(f->f.py, x1, d) - 2 * eval(f->f.py, x, d) + eval(f->f.py, x2, d)
+            )
+        );
         *(x1 + i) -= h, *(x2 + i) += h;
 
     }
@@ -197,7 +238,7 @@ double *central_second(RealFunction f, double *x, double h, unsigned int d) {
 
 }
 
-double *central_nth(RealFunction f, double *x, double h, unsigned int n, unsigned int d) {
+double *central_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -210,7 +251,9 @@ double *central_nth(RealFunction f, double *x, double h, unsigned int n, unsigne
         for (int k = 0; k <= n; ++i) {
 
             *(x1 + i) += (n / 2 - k) * h;
-            *(finite_differences + i) += (i % 2 == 0 ? 1 : -1) * binom(n, k) * f(x1, d);
+            *(finite_differences + i) += (i % 2 == 0 ? 1 : -1) * binom(n, k) * (
+                f->c ? f->f.c(x1, d) : eval(f->f.py, x1, d)
+            );
             *(x1 + i) -= (n / 2 - k) * h;
 
         }
@@ -224,7 +267,7 @@ double *central_nth(RealFunction f, double *x, double h, unsigned int n, unsigne
 }
 
 double *dquotient(
-    RealFunction f, double *x, double h, unsigned int n, unsigned int d,
+    struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d,
     struct FiniteDifference *findiff
 ) {
 

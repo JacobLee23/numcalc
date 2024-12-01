@@ -2,4 +2,12 @@
  * Type definitions for mathematical entities
  */
 
-typedef double (*RealFunction)(double *x, unsigned int d);
+#include <stdbool.h>
+
+struct RealFunction {
+    bool c;
+    union {
+        double (*c)(double *x, unsigned int d);
+        PyObject *py;
+    } f;
+};

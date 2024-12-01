@@ -26,10 +26,11 @@ short right(struct Interval *interval, unsigned int i, double *x);
 short midpoint(struct Interval *interval, unsigned int i, double *x);
 
 short riemann(
-    RealFunction f, struct Interval **intervals, RiemannRule *rules, unsigned int d, double *res
+    struct RealFunction *f, struct Interval **intervals, RiemannRule *rules, unsigned int d,
+    double *res
 );
 short trapezoidal(
-    RealFunction f, struct Interval **intervals, unsigned int d, double *res
+    struct RealFunction *f, struct Interval **intervals, unsigned int d, double *res
 );
 
 typedef struct {
