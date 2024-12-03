@@ -3,7 +3,7 @@
  */
 
 #define PY_SSIZE_T_CLEAN
-#include "Python.h"
+#include <Python.h>
 
 #ifndef TYPES_H
 #define TYPES_H
@@ -16,17 +16,22 @@ struct Interval {
     double upper;
     unsigned int n;
 };
+struct Interval *parse_interval(PyObject *ob_interval);
+struct Interval **parse_intervals(PyObject *ob_intervals, unsigned int *d);
 
 double delta(struct Interval **intervals, unsigned int d);
+short endpoint(struct Interval *interval, unsigned int i, double *x);
 
 typedef short (*RiemannRule)(struct Interval *interval, unsigned int i, double *x);
-short endpoint(struct Interval *interval, unsigned int i, double *x);
 short left(struct Interval *interval, unsigned int i, double *x);
 short right(struct Interval *interval, unsigned int i, double *x);
 short midpoint(struct Interval *interval, unsigned int i, double *x);
 
+enum RiemannRules { LEFT, RIGHT, MIDPOINT };
+enum RiemannRules *parse_rrules(PyObject *ob_rrules);
+
 short riemann(
-    struct RealFunction *f, struct Interval **intervals, RiemannRule *rules, unsigned int d,
+    struct RealFunction *f, struct Interval **intervals, enum RiemannRules *rrules, unsigned int d,
     double *res
 );
 short trapezoidal(
@@ -51,8 +56,8 @@ static PyTypeObject IntervalType = {
 };
 
 static PyObject *integral_delta(PyObject *self, PyObject *args);
-
 static PyObject *integral_endpoint(PyObject *self, PyObject *args);
+
 static PyObject *integral_left(PyObject *self, PyObject *args);
 static PyObject *integral_right(PyObject *self, PyObject *args);
 static PyObject *integral_midpoint(PyObject *self, PyObject *args);
@@ -77,10 +82,20 @@ static PyModuleDef integral_module = {
 
 PyMODINIT_FUNC PyInit_integral() {
 
-    PyObject *m;
-    if (PyType_Ready(&IntervalType) < 0) { return NULL; }
-    if ((m = PyModule_Create(&integral_module)) == NULL) { return NULL; }
-    if (PyModule_AddObjectRef(m, "Interval", (PyObject *) &IntervalType) < 0) {
+    PyObject *m = PyModule_Create(&integral_module);
+    if (!m) { return NULL; }
+
+    if (PyType_Ready(&IntervalType) < 0
+        || PyModule_AddObjectRef(m, "Interval", (PyObject *) &IntervalType) < 0
+    ) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    if (
+        PyModule_AddIntConstant(m, "LEFT", LEFT) < 0
+        || PyModule_AddIntConstant(m, "RIGHT", RIGHT) < 0
+        || PyModule_AddIntConstant(m, "MIDPOINT", MIDPOINT) < 0
+    ) {
         Py_DECREF(m);
         return NULL;
     }
