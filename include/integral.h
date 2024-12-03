@@ -85,7 +85,8 @@ PyMODINIT_FUNC PyInit_integral() {
     PyObject *m = PyModule_Create(&integral_module);
     if (!m) { return NULL; }
 
-    if (PyType_Ready(&IntervalType) < 0
+    if (
+        PyType_Ready(&IntervalType) < 0
         || PyModule_AddObjectRef(m, "Interval", (PyObject *) &IntervalType) < 0
     ) {
         Py_DECREF(m);

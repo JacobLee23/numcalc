@@ -14,7 +14,7 @@ struct Interval *parse_interval(PyObject *ob_interval) {
         PyErr_SetString(PyExc_TypeError, "Expected an 'Interval' object");
         return NULL;
     }
-    struct Interval *py_interval = (struct Interval *)ob_interval;
+    IntervalObject *py_interval = (IntervalObject *)ob_interval;
 
     struct Interval *interval = (struct Interval *)malloc(sizeof(struct Interval));
     if (!interval) {
@@ -45,46 +45,38 @@ struct Interval **parse_intervals(PyObject *ob_intervals, unsigned int *d) {
     *d = (unsigned int)size_intervals;
 
     struct Interval **intervals = (struct Interval **)calloc(*d, sizeof(struct Interval *));
+    if (!intervals) {
+        PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
+        return NULL;
+    }
+    for (unsigned int i = 0; i < *d; ++i) {
+        *(intervals + i) = (struct Interval *)malloc(sizeof(struct Interval));
+        if (!(*(intervals + i))) {
+            PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
+            for (unsigned int j = 0; j < i; ++j) { free(*(intervals + i)); }
+            free(intervals);
+            return NULL;
+        }
+    }
     
     for (unsigned int i = 0; i < *d; ++i) {
 
         PyObject *item = PySequence_GetItem(ob_intervals, i);
         if (!item) {
-
             PyErr_SetString(PyExc_RuntimeError, "Failed to access sequence contents");
             PY_XDECREF(item);
-
             for (unsigned int j = 0; j < i; ++j) { free(*(intervals + i)); }
             free(intervals);
-
             return NULL;
-            
         }
-
         if (!PyObject_TypeCheck(item, &IntervalType)) {
-
-            PyErr_SetString(PyExc_TypeError, "Expected 'Interval' object");
-            PY_DECREF(item);
-
+            PyErr_SetString(PyExc_TypeError, "Expected an 'Interval' object");
+            Py_DECREF(item);
             for (unsigned int j = 0; j < i; ++j) { free(*(intervals + i)); }
             free(intervals);
-
             return NULL;
-
         }
         IntervalObject *interval = (IntervalObject *)item;
-
-        if (!(*(intervals + i) = (struct Interval *)malloc(sizeof(struct Interval)))) {
-
-            PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
-            Py_DECREF(item);
-
-            for (unsigned int j = 0; j < i; ++j) { free(*(intervals + i)); }
-            free(intervals);
-
-            return NULL;
-
-        }
 
         (*(intervals + i))->lower = interval->lower;
         (*(intervals + i))->upper = interval->upper;
@@ -106,7 +98,6 @@ double delta(struct Interval **intervals, unsigned int d) {
         a *= (*(intervals + i))->upper - (*(intervals + i))->lower;
         b *= (*(intervals + i))->n;
     }
-
     return a / b;
 
 }
@@ -177,7 +168,6 @@ enum RiemannRules *parse_rrules(PyObject *ob_rrules) {
     }
 
     for (unsigned int i = 0; i < d; ++i) {
-
         PyObject *item = PySequence_GetItem(ob_rrules, i);
         if (!item) {
             PyErr_SetString(PyExc_RuntimeError, "Failed to access sequence contents");
@@ -185,17 +175,14 @@ enum RiemannRules *parse_rrules(PyObject *ob_rrules) {
             free(rrules);
             return NULL;
         }
-
         if (!PyLong_Check(item)) {
             PyErr_SetString(PyExc_TypeError, "Expected a sequence of 'int' objects");
-            PY_DECREF(item);
+            Py_DECREF(item);
             free(rrules);
             return NULL;
         }
-
         *(rrules + i) = PyLong_AsLong(item);
-        PY_DECREF(item);
-
+        Py_DECREF(item);
     }
 
     return rrules;
@@ -283,9 +270,7 @@ short riemann(struct RealFunction *f, struct Interval **intervals, enum RiemannR
 
     const double dv = delta(intervals, d);
     unsigned int radix = 0;
-
     *res = 0.;
-
     while (inbounds(intervals, radix, d)) {
 
         if (xvalue(intervals, rules, radix, d, x) == -1) {
@@ -299,8 +284,7 @@ short riemann(struct RealFunction *f, struct Interval **intervals, enum RiemannR
 
     }
 
-    free(rules);
-    free(x);
+    free(rules); free(x);
 
     return 0;
 
@@ -334,9 +318,7 @@ short trapezoidal(struct RealFunction *f, struct Interval **intervals, unsigned 
 
         nborders = 0;
         for (int i = 0; i < d; ++i) {
-            if (
-                *(x + i) == (*(intervals + i))->lower || *(x + i) == (*(intervals + i))->upper
-            ) {
+            if (*(x + i) == (*(intervals + i))->lower || *(x + i) == (*(intervals + i))->upper) {
                 ++nborders;
             }
         }
@@ -346,8 +328,7 @@ short trapezoidal(struct RealFunction *f, struct Interval **intervals, unsigned 
 
     }
     
-    free(rules);
-    free(x);
+    free(rules); free(x);
 
     return 0;
 
