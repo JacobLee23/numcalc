@@ -18,7 +18,7 @@ static double *copyx(double *x, unsigned int d) {
 
 }
 
-double *forward_first(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *forward_first(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -45,7 +45,7 @@ double *forward_first(struct RealFunction *f, double *x, double h, unsigned int 
 
 }
 
-double *forward_second(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *forward_second(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -72,7 +72,7 @@ double *forward_second(struct RealFunction *f, double *x, double h, unsigned int
 
 }
 
-double *forward_nth(struct RealFunction *f, double *x, double h, unsigned int d, unsigned int n) {
+static double *forward_nth(struct RealFunction *f, double *x, double h, unsigned int d, unsigned int n) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -100,7 +100,7 @@ double *forward_nth(struct RealFunction *f, double *x, double h, unsigned int d,
 
 }
 
-double *backward_first(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *backward_first(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -126,7 +126,7 @@ double *backward_first(struct RealFunction *f, double *x, double h, unsigned int
 
 }
 
-double *backward_second(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *backward_second(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -154,7 +154,7 @@ double *backward_second(struct RealFunction *f, double *x, double h, unsigned in
 
 }
 
-double *backward_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d) {
+static double *backward_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -182,7 +182,7 @@ double *backward_nth(struct RealFunction *f, double *x, double h, unsigned int n
 
 }
 
-double *central_first(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *central_first(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -210,7 +210,7 @@ double *central_first(struct RealFunction *f, double *x, double h, unsigned int 
 
 }
 
-double *central_second(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *central_second(struct RealFunction *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -238,7 +238,7 @@ double *central_second(struct RealFunction *f, double *x, double h, unsigned int
 
 }
 
-double *central_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d) {
+static double *central_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences;
@@ -266,7 +266,7 @@ double *central_nth(struct RealFunction *f, double *x, double h, unsigned int n,
 
 }
 
-double *dquotient(
+static double *dquotient(
     struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d,
     struct FiniteDifference *findiff
 ) {
