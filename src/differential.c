@@ -18,7 +18,7 @@ static double *copyx(double *x, unsigned int d) {
 
 }
 
-static double *forward_first(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *forward_first(PyObject *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
@@ -30,13 +30,7 @@ static double *forward_first(struct RealFunction *f, double *x, double h, unsign
     double a, b;
     for (int i = 0; i < d; ++i) {
         *(x1 + i) += h;
-        *(finite_differences + i) = (
-            f->c ? (
-                f->f.c(x1, d) - f->f.c(x, d)
-            ) : (
-                eval(f->f.py, x1, d) - eval(f->f.py, x, d)
-            )
-        );
+        *(finite_differences + i) = eval(f, x1, d) - eval(f, x, d);
         *(x1 + i) -= h;
     }
 
@@ -46,7 +40,7 @@ static double *forward_first(struct RealFunction *f, double *x, double h, unsign
 
 }
 
-static double *forward_second(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *forward_second(PyObject *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -59,13 +53,7 @@ static double *forward_second(struct RealFunction *f, double *x, double h, unsig
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) += 2 * h, *(x2 + i) += h;
-        *(finite_differences + i) = (
-            f->c ? (
-                f->f.c(x1, d) - 2 * f->f.c(x2, d) + f->f.c(x, d)
-            ) : (
-                eval(f->f.py, x1, d) - 2 * eval(f->f.py, x2, d) + eval(f->f.py, x, d)
-            )
-        );
+        *(finite_differences + i) = eval(f, x1, d) - 2 * eval(f, x2, d) + eval(f, x, d);
         *(x1 + i) -= 2 * h, *(x2 + i) -= h;
     }
 
@@ -75,7 +63,7 @@ static double *forward_second(struct RealFunction *f, double *x, double h, unsig
 
 }
 
-static double *forward_nth(struct RealFunction *f, double *x, double h, unsigned int d, unsigned int n) {
+static double *forward_nth(PyObject *f, double *x, double h, unsigned int d, unsigned int n) {
 
     double *x1 = copyx(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
@@ -90,9 +78,7 @@ static double *forward_nth(struct RealFunction *f, double *x, double h, unsigned
 
         for (int k = 0; k <= n; ++k) {
             *(x1 + i) += k * h;
-            *(finite_differences + i) += (n - k % 2 == 0 ? 1 : -1) * binom(n, k) * (
-                f->c ? f->f.c(x1, d) : eval(f->f.py, x1, d)
-            );
+            *(finite_differences + i) += (n - k % 2 == 0 ? 1 : -1) * binom(n, k) * eval(f, x1, d);
             *(x1 + i) -= k * h;
         }
 
@@ -104,7 +90,7 @@ static double *forward_nth(struct RealFunction *f, double *x, double h, unsigned
 
 }
 
-static double *backward_first(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *backward_first(PyObject *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
@@ -115,13 +101,7 @@ static double *backward_first(struct RealFunction *f, double *x, double h, unsig
 
     for (int i = 0; i < d; ++i) {
         *(x1 + i) -= h;
-        *(finite_differences + i) = (
-            f->c ? (
-                f->f.c(x, d) - f->f.c(x1, d)
-            ) : (
-                eval(f->f.py, x, d) - eval(f->f.py, x1, d)
-            )
-        );
+        *(finite_differences + i) = eval(f, x, d) - eval(f, x1, d);
         *(x1 + i) += h;
     }
 
@@ -131,7 +111,7 @@ static double *backward_first(struct RealFunction *f, double *x, double h, unsig
 
 }
 
-static double *backward_second(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *backward_second(PyObject *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -143,13 +123,7 @@ static double *backward_second(struct RealFunction *f, double *x, double h, unsi
 
     for (int i = 0; i < d; ++i) {
         *(x1 + i) -= h, *(x2 + i) -= 2 * h;
-        *(finite_differences + i) = (
-            f->c ? (
-                f->f.c(x, d) - 2 * f->f.c(x1, d) + f->f.c(x2, d)
-            ) : (
-                eval(f->f.py, x, d) - 2 * eval(f->f.py, x1, d) + eval(f->f.py, x2, d)
-            )
-        );
+        *(finite_differences + i) = eval(f, x, d) - 2 * eval(f, x1, d) + eval(f, x2, d);
         *(x1 + i) += h, *(x2 + i) += 2 * h;
     }
 
@@ -159,7 +133,7 @@ static double *backward_second(struct RealFunction *f, double *x, double h, unsi
 
 }
 
-static double *backward_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d) {
+static double *backward_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
@@ -174,9 +148,7 @@ static double *backward_nth(struct RealFunction *f, double *x, double h, unsigne
 
         for (int k = 0; k <= n; ++i) {
             *(x1 + i) -= k * h;
-            *(finite_differences + i) += (i % 2 == 0 ? 1 : -1) * binom(n, k) * (
-                f->c ? f->f.c(x1, d) : eval(f->f.py, x1, d)
-            );
+            *(finite_differences + i) += (i % 2 == 0 ? 1 : -1) * binom(n, k) * eval(f, x1, d);
             *(x1 + i) += k * h;
         }
 
@@ -188,7 +160,7 @@ static double *backward_nth(struct RealFunction *f, double *x, double h, unsigne
 
 }
 
-static double *central_first(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *central_first(PyObject *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -201,13 +173,7 @@ static double *central_first(struct RealFunction *f, double *x, double h, unsign
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) += h / 2, *(x2 + i) -= h / 2;
-        *(finite_differences + i) = (
-            f->c ? (
-                f->f.c(x1, d) - f->f.c(x2, d)
-            ) : (
-                eval(f->f.py, x1, d) - eval(f->f.py, x2, d)
-            )
-        );
+        *(finite_differences + i) = eval(f, x1, d) - eval(f, x2, d);
         *(x1 + i) -= h / 2, *(x2 + i) += h / 2;
 
     }
@@ -218,7 +184,7 @@ static double *central_first(struct RealFunction *f, double *x, double h, unsign
 
 }
 
-static double *central_second(struct RealFunction *f, double *x, double h, unsigned int d) {
+static double *central_second(PyObject *f, double *x, double h, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *x2 = copyx(x, d);
@@ -231,13 +197,7 @@ static double *central_second(struct RealFunction *f, double *x, double h, unsig
     for (int i = 0; i < d; ++i) {
 
         *(x1 + i) += h, *(x2 + i) -= h;
-        *(finite_differences + i) = (
-            f->c ? (
-                f->f.c(x1, d) - 2 * f->f.c(x, d) + f->f.c(x2, d)
-            ) : (
-                eval(f->f.py, x1, d) - 2 * eval(f->f.py, x, d) + eval(f->f.py, x2, d)
-            )
-        );
+        *(finite_differences + i) = eval(f, x1, d) - 2 * eval(f, x, d) + eval(f, x2, d);
         *(x1 + i) -= h, *(x2 + i) += h;
 
     }
@@ -248,7 +208,7 @@ static double *central_second(struct RealFunction *f, double *x, double h, unsig
 
 }
 
-static double *central_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d) {
+static double *central_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d) {
 
     double *x1 = copyx(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
@@ -264,9 +224,7 @@ static double *central_nth(struct RealFunction *f, double *x, double h, unsigned
         for (int k = 0; k <= n; ++i) {
 
             *(x1 + i) += (n / 2 - k) * h;
-            *(finite_differences + i) += (i % 2 == 0 ? 1 : -1) * binom(n, k) * (
-                f->c ? f->f.c(x1, d) : eval(f->f.py, x1, d)
-            );
+            *(finite_differences + i) += (i % 2 == 0 ? 1 : -1) * binom(n, k) * eval(f, x1, d);
             *(x1 + i) -= (n / 2 - k) * h;
 
         }
@@ -280,7 +238,7 @@ static double *central_nth(struct RealFunction *f, double *x, double h, unsigned
 }
 
 static double *dquotient(
-    struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d,
+    PyObject *f, double *x, double h, unsigned int n, unsigned int d,
     struct FiniteDifference *findiff
 ) {
 
@@ -316,7 +274,7 @@ static PyObject *differential_dquotient(PyObject *self, PyObject *args) {
     enum FinDiffRule findiffr;
     if (!PyArg_ParseTuple(args, "OOdIi", &ob_f, &ob_x, &h, &n, &findiffr)) { return NULL; }
 
-    struct RealFunction *f = parse_function(ob_f);
+    PyObject *f = parse_function(ob_f);
 
     if (!PySequence_Check(ob_x)) {
         PyErr_SetString(PyExc_TypeError, "Expected a sequence of 'float' objects");

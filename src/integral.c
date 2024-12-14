@@ -240,7 +240,7 @@ static short xvalue(
 
 }
 
-short riemann(struct RealFunction *f, struct Interval **intervals, enum RiemannRules *rrules, unsigned int d, double *res) {
+short riemann(PyObject *f, struct Interval **intervals, enum RiemannRules *rrules, unsigned int d, double *res) {
 
     RiemannRule *rules = (RiemannRule *)calloc(d, sizeof(RiemannRule));
     double *x = (double *)calloc(d, sizeof(double));
@@ -279,7 +279,7 @@ short riemann(struct RealFunction *f, struct Interval **intervals, enum RiemannR
             return -1;
         }
 
-        *res += dv * (f->c ? f->f.c(x, d) : eval(f->f.py, x, d));
+        *res += dv * eval(f, x, d);
         radix = increment(intervals, radix, d);
 
     }
@@ -290,7 +290,7 @@ short riemann(struct RealFunction *f, struct Interval **intervals, enum RiemannR
 
 }
 
-short trapezoidal(struct RealFunction *f, struct Interval **intervals, unsigned int d, double *res) {
+short trapezoidal(PyObject *f, struct Interval **intervals, unsigned int d, double *res) {
 
     RiemannRule *rules = (RiemannRule *)calloc(d, sizeof(RiemannRule));
     double *x = (double *)calloc(d, sizeof(double));
@@ -323,7 +323,7 @@ short trapezoidal(struct RealFunction *f, struct Interval **intervals, unsigned 
             }
         }
 
-        *res += dv * (1 << (d - nborders)) * (f->c ? f->f.c(x, d) : eval(f->f.py, x, d)) / nlegs;
+        *res += dv * (1 << (d - nborders)) * eval(f, x, d) / nlegs;
         radix = increment(intervals, radix, d);
 
     }
@@ -409,7 +409,7 @@ static PyObject *integral_riemann(PyObject *self, PyObject *args) {
     if (!PyArg_ParseTuple(args, "OOO", &ob_f, &ob_intervals, &ob_rrules)) { return NULL; }
 
     unsigned int d;
-    struct RealFunction *f = parse_function(ob_f);
+    PyObject *f = parse_function(ob_f);
     struct Interval **intervals = parse_intervals(ob_intervals, &d);
     enum RiemannRules *rrules = parse_rrules(ob_rrules);
     double *res = (double *)malloc(sizeof(double));
@@ -436,7 +436,7 @@ static PyObject *integral_trapezoidal(PyObject *self, PyObject *args) {
     if (!PyArg_ParseTuple(args, "OO", &ob_f, &ob_intervals)) { return NULL; }
 
     unsigned int d;
-    struct RealFunction *f = parse_function(ob_f);
+    PyObject *f = parse_function(ob_f);
     struct Interval **intervals = parse_intervals(ob_intervals, &d);
     double *res = (double *)malloc(sizeof(double));
     if(!f || !intervals || !res) {

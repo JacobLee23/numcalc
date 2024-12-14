@@ -5,11 +5,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#ifndef TYPES_H
-#define TYPES_H
-#include "types.h"
-#endif
-
 
 struct Interval {
     double lower;
@@ -31,12 +26,9 @@ enum RiemannRules { LEFT, RIGHT, MIDPOINT };
 enum RiemannRules *parse_rrules(PyObject *ob_rrules);
 
 short riemann(
-    struct RealFunction *f, struct Interval **intervals, enum RiemannRules *rrules, unsigned int d,
-    double *res
+    PyObject *f, struct Interval **intervals, enum RiemannRules *rrules, unsigned int d, double *res
 );
-short trapezoidal(
-    struct RealFunction *f, struct Interval **intervals, unsigned int d, double *res
-);
+short trapezoidal(PyObject *f, struct Interval **intervals, unsigned int d, double *res);
 
 typedef struct {
     PyObject_HEAD

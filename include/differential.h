@@ -5,37 +5,32 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#ifndef TYPES_H
-#define TYPES_H
-#include "../include/types.h"
-#endif
-
 
 static struct FiniteDifference {
-    double *(*first)(struct RealFunction *f, double *x, double h, unsigned int d);
-    double *(*second)(struct RealFunction *f, double *x, double h, unsigned int d);
-    double *(*nth)(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d);
+    double *(*first)(PyObject *f, double *x, double h, unsigned int d);
+    double *(*second)(PyObject *f, double *x, double h, unsigned int d);
+    double *(*nth)(PyObject *f, double *x, double h, unsigned int n, unsigned int d);
 };
 
-static double *forward_first(struct RealFunction *f, double *x, double h, unsigned int d);
-static double *forward_second(struct RealFunction *f, double *x, double h, unsigned int d);
-static double *forward_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d);
+static double *forward_first(PyObject *f, double *x, double h, unsigned int d);
+static double *forward_second(PyObject *f, double *x, double h, unsigned int d);
+static double *forward_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d);
 static struct FiniteDifference forward = { forward_first, forward_second, forward_nth };
 
-static double *backward_first(struct RealFunction *f, double *x, double h, unsigned int d);
-static double *backward_second(struct RealFunction *f, double *x, double h, unsigned int d);
-static double *backward_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d);
+static double *backward_first(PyObject *f, double *x, double h, unsigned int d);
+static double *backward_second(PyObject *f, double *x, double h, unsigned int d);
+static double *backward_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d);
 static struct FiniteDifference backward = { backward_first, backward_second, backward_nth };
 
-static double *central_first(struct RealFunction *f, double *x, double h, unsigned int d);
-static double *central_second(struct RealFunction *f, double *x, double h, unsigned int d);
-static double *central_nth(struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d);
+static double *central_first(PyObject *f, double *x, double h, unsigned int d);
+static double *central_second(PyObject *f, double *x, double h, unsigned int d);
+static double *central_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d);
 static struct FiniteDifference central = { central_first, central_second, central_nth };
 
 static enum FinDiffRule { FORWARD, BACKWARD, CENTRAL };
 
 static double *dquotient(
-    struct RealFunction *f, double *x, double h, unsigned int n, unsigned int d,
+    PyObject *f, double *x, double h, unsigned int n, unsigned int d,
     struct FiniteDifference *findiff
 );
 
