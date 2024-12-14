@@ -1,9 +1,9 @@
 /**
- * 
+ * Interfaces for evaluating representations of mathematical functions.
  */
 
 #define PY_SSIZE_T_CLEAN
-#include "Python.h"
+#include <Python.h>
 
 
 double eval(PyObject *f, double *x, unsigned int d);
