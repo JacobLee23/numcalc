@@ -181,7 +181,7 @@ enum RiemannRules *parse_rrules(PyObject *ob_rrules) {
             free(rrules);
             return NULL;
         }
-        *(rrules + i) = PyLong_AsLong(item);
+        *(rrules + i) = (enum RiemannRules)PyLong_AsInt(item);
         Py_DECREF(item);
     }
 
