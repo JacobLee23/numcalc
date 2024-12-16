@@ -7,7 +7,10 @@
 #include "../include/numbers.h"
 
 
-double power(double b, unsigned int p) {
+/**
+ * Evaluates a real base `b` raised to the power of a non-negative integer `p`.
+ */
+static double power(double b, unsigned int p) {
 
     if (p == 0) { return 1.; }
 
@@ -20,7 +23,10 @@ double power(double b, unsigned int p) {
 
 }
 
-unsigned long ipower(unsigned int b, unsigned int p) {
+/**
+ * Evaluates a non-negative base `b` raised to the power of a non-negative integer `p`.
+ */
+static unsigned long ipower(unsigned int b, unsigned int p) {
 
     unsigned long res = 1L;
 
@@ -36,12 +42,21 @@ unsigned long ipower(unsigned int b, unsigned int p) {
 
 }
 
-unsigned long factorial_(
+/**
+ * Recursively evaluates the factorial of a non-negative integer `n`.
+ */
+static unsigned long factorialr(
     unsigned int n, unsigned long res
-) { return (n == 0 || n == 1 ? res : factorial_(n - 1, n * res)); }
+) { return (n == 0 || n == 1 ? res : factorialr(n - 1, n * res)); }
 
-unsigned long factorial(unsigned int n) { return factorial_(n, 1); }
+/**
+ * Evaluates the factorial of a non-negative integer `n`.
+ */
+unsigned long factorial(unsigned int n) { return factorialr(n, 1); }
 
+/**
+ * Computes the `n`th binomial number of integer `alpha`.
+ */
 long binom(int alpha, unsigned int n) {
 
     if (n == 0) { return 1; }
@@ -51,6 +66,9 @@ long binom(int alpha, unsigned int n) {
 
 }
 
+/**
+ * Python wrapper for `power`.
+ */
 static PyObject *numbers_power(PyObject *self, PyObject *args) {
 
     const double b;
@@ -60,6 +78,9 @@ static PyObject *numbers_power(PyObject *self, PyObject *args) {
 
 }
 
+/**
+ * Python wrapper for `ipower`.
+ */
 static PyObject *numbers_ipower(PyObject *self, PyObject *args) {
 
     const unsigned int b;
@@ -69,6 +90,9 @@ static PyObject *numbers_ipower(PyObject *self, PyObject *args) {
 
 }
 
+/**
+ * Python wrapper for `factorial`.
+ */
 static PyObject *numbers_factorial(PyObject *self, PyObject *args) {
 
     const unsigned int n;
@@ -77,6 +101,9 @@ static PyObject *numbers_factorial(PyObject *self, PyObject *args) {
 
 }
 
+/**
+ * Python wrapper for `binom`.
+ */
 static PyObject *numbers_binom(PyObject *self, PyObject *args) {
 
     const int alpha;

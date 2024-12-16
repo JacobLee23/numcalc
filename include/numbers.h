@@ -8,10 +8,10 @@
 #define DNAN 0. / 0.
 
 
-double power(double b, unsigned int p);
-unsigned long ipower(unsigned int b, unsigned int p);
-unsigned long factorial(unsigned int n);
-long binom(int alpha, unsigned int k);
+static double power(double b, unsigned int p);
+static unsigned long ipower(unsigned int b, unsigned int p);
+static unsigned long factorial(unsigned int n);
+static long binom(int alpha, unsigned int k);
 
 static PyObject *numbers_power(PyObject *self, PyObject *args);
 static PyObject *numbers_ipower(PyObject *self, PyObject *args);
