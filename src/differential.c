@@ -9,18 +9,33 @@
 #include "../include/numbers.h"
 
 
-static double *copyx(double *x, unsigned int d) {
-
-    double *x_ = (double *)calloc(d, sizeof(double));
-    if (!x_) { return NULL; }
-    for (int i = 0; i < d; ++i) { *(x_ + i) = *(x + 1); }
-    return x_;
-
+/**
+ * Duplicates a domain element.
+ * 
+ * @param x The domain element to duplicate
+ * @param d The number of dimensions of the domain element
+ * @return A dynamically allocated array value-equivalent to `x`, or `NULL` upon failure
+ */
+static double *duplicate(double *x, unsigned int d) {
+    double *y = (double *)calloc(d, sizeof(double));
+    if (!y) { return NULL; }
+    for (int i = 0; i < d; ++i) { *(y + i) = *(x + 1); }
+    return y;
 }
 
+/**
+ * Computes the first-order forward partial finite differences for a mathematical function of several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A callable representation of a mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param d The number of dimensions in the domain of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
 static double *forward_first(PyObject *f, double *x, double h, unsigned int d) {
 
-    double *x1 = copyx(x, d);
+    double *x1 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !finite_differences) {
         free(x1); free(finite_differences);
@@ -40,10 +55,20 @@ static double *forward_first(PyObject *f, double *x, double h, unsigned int d) {
 
 }
 
+/**
+ * Computes the second-order forward partial finite differences for a mathematical function of several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A callable representation of a mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param d The number of dimensions in the domain of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
 static double *forward_second(PyObject *f, double *x, double h, unsigned int d) {
 
-    double *x1 = copyx(x, d);
-    double *x2 = copyx(x, d);
+    double *x1 = duplicate(x, d);
+    double *x2 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !x2 || !finite_differences) {
         free(x1); free(x2); free(finite_differences);
@@ -63,9 +88,20 @@ static double *forward_second(PyObject *f, double *x, double h, unsigned int d) 
 
 }
 
-static double *forward_nth(PyObject *f, double *x, double h, unsigned int d, unsigned int n) {
+/**
+ * Computes the nth-order forward partial finite differences for a mathematical function of several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A callable representation of a mathematical function of several real variables
+ * @param x The domain element of `f` at which to compuate the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param n The degree of the finite differences
+ * @param d The number of dimensions in the domai of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
+static double *forward_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d) {
 
-    double *x1 = copyx(x, d);
+    double *x1 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !finite_differences) {
         free(x1); free(finite_differences);
@@ -90,9 +126,19 @@ static double *forward_nth(PyObject *f, double *x, double h, unsigned int d, uns
 
 }
 
+/**
+ * Computes the first-order backward partial finite differences for a mathematical function of several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A callable representation of a mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param d The number of dimensions in the domain of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
 static double *backward_first(PyObject *f, double *x, double h, unsigned int d) {
 
-    double *x1 = copyx(x, d);
+    double *x1 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !finite_differences) {
         free(x1); free(finite_differences);
@@ -111,10 +157,20 @@ static double *backward_first(PyObject *f, double *x, double h, unsigned int d) 
 
 }
 
+/**
+ * Computes the second-order backward partial finite differences for a mathematical function of several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A callable representation of a mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param d The number of dimensions in the domain of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
 static double *backward_second(PyObject *f, double *x, double h, unsigned int d) {
 
-    double *x1 = copyx(x, d);
-    double *x2 = copyx(x, d);
+    double *x1 = duplicate(x, d);
+    double *x2 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !x2 || !finite_differences) {
         free(x1); free(x2); free(finite_differences);
@@ -133,9 +189,20 @@ static double *backward_second(PyObject *f, double *x, double h, unsigned int d)
 
 }
 
+/**
+ * Computes the nth-order backward partial finite differences of a mathematical function of several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A callable representation of a mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param n The degree of the finite differences
+ * @param d The number of dimensions in the domain of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
 static double *backward_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d) {
 
-    double *x1 = copyx(x, d);
+    double *x1 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !finite_differences) {
         free(x1); free(finite_differences);
@@ -160,10 +227,20 @@ static double *backward_nth(PyObject *f, double *x, double h, unsigned int n, un
 
 }
 
+/**
+ * Computes the first-order central partial finite differences for a mathematical function of several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A callable representation of a mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param d The number of dimensions in the domain of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
 static double *central_first(PyObject *f, double *x, double h, unsigned int d) {
 
-    double *x1 = copyx(x, d);
-    double *x2 = copyx(x, d);
+    double *x1 = duplicate(x, d);
+    double *x2 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !x2 || !finite_differences) {
         free(x1); free(x2); free(finite_differences);
@@ -184,10 +261,20 @@ static double *central_first(PyObject *f, double *x, double h, unsigned int d) {
 
 }
 
+/**
+ * Computes the second-order central partial finite differences for a mathematical function of several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param d The number of dimensions in the domain of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
 static double *central_second(PyObject *f, double *x, double h, unsigned int d) {
 
-    double *x1 = copyx(x, d);
-    double *x2 = copyx(x, d);
+    double *x1 = duplicate(x, d);
+    double *x2 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !x2 || !finite_differences) {
         free(x1); free(x2); free(finite_differences);
@@ -208,9 +295,20 @@ static double *central_second(PyObject *f, double *x, double h, unsigned int d) 
 
 }
 
+/**
+ * Computes the nth-order central partial finite differences for a mathematical function fo several
+ * real variables at a specified domain element using a given step size.
+ * 
+ * @param f A mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the finite differences
+ * @param h The step size to use in computing the finite differences
+ * @param n The order of the finite differences
+ * @param d The number of dimensions in the domain of `f`
+ * @return A dynamically allocated array of the computed finite differences, or `NULL` upon failure
+ */
 static double *central_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d) {
 
-    double *x1 = copyx(x, d);
+    double *x1 = duplicate(x, d);
     double *finite_differences = (double *)calloc(d, sizeof(double));
     if (!x1 || !finite_differences) {
         free(x1); free(finite_differences);
@@ -237,10 +335,34 @@ static double *central_nth(PyObject *f, double *x, double h, unsigned int n, uns
 
 }
 
+/**
+ * Computes the nth-order partial difference quotients for a mathematical function of several real
+ * variables at a specified domain element using a given step size.
+ * 
+ * @param f A callable representation of a mathematical function of several real variables
+ * @param x The domain element of `f` at which to compute the difference quotients
+ * @param h The step size to use in computing the difference quotients
+ * @param n The order of the difference quotients
+ * @param d The number of dimensions in the domain of `f`
+ * @param rule Specifies the type of finite difference to use in computing the difference quotients
+ * @return A dyanmically allocated array of the computed difference quotients, or `NULL` upon failure
+ */
 static double *dquotient(
-    PyObject *f, double *x, double h, unsigned int n, unsigned int d,
-    struct FiniteDifference *findiff
+    PyObject *f, double *x, double h, unsigned int n, unsigned int d, enum FinDiffRule rule
 ) {
+
+    struct FiniteDifference *findiff;
+    switch (rule) {
+        case FORWARD:
+            findiff = &forward;
+            break;
+        case BACKWARD:
+            findiff = &backward;
+            break;
+        case CENTRAL:
+            findiff = &central;
+            break;
+    }
 
     double *finite_differences;
     switch(n) {
@@ -257,22 +379,23 @@ static double *dquotient(
     if (!finite_differences) { return NULL; }
 
     double step = power(h, n);
-    for (int i = 0; i < d; ++i) {
-        *(finite_differences + i) /= step;
-    }
+    for (int i = 0; i < d; ++i) { *(finite_differences + i) /= step; }
 
     return finite_differences;
 
 }
 
+/**
+ * Python API wrapper for `dquotient`
+ */
 static PyObject *differential_dquotient(PyObject *self, PyObject *args) {
 
     PyObject *ob_f;
     PyObject *ob_x;
     double h;
     unsigned int n;
-    enum FinDiffRule findiffr;
-    if (!PyArg_ParseTuple(args, "OOdIi", &ob_f, &ob_x, &h, &n, &findiffr)) { return NULL; }
+    enum FinDiffRule rule;
+    if (!PyArg_ParseTuple(args, "OOdIi", &ob_f, &ob_x, &h, &n, &rule)) { return NULL; }
 
     PyObject *f = parse_function(ob_f);
 
@@ -294,22 +417,6 @@ static PyObject *differential_dquotient(PyObject *self, PyObject *args) {
         return NULL;
     }
 
-    struct FiniteDifference *findiff;
-    switch (findiffr) {
-        case FORWARD:
-            findiff = &forward;
-            break;
-        case BACKWARD:
-            findiff = &backward;
-            break;
-        case CENTRAL:
-            findiff = &central;
-            break;
-        default:
-            PyErr_SetString(PyExc_ValueError, "Invalid finite difference method");
-            return NULL;
-    }
-
     for (unsigned int i = 0; i < d; ++i) {
         PyObject *item;
         if (!(item = PySequence_GetItem(ob_x, i))) {
@@ -328,7 +435,7 @@ static PyObject *differential_dquotient(PyObject *self, PyObject *args) {
         Py_DECREF(item);
     }
 
-    double *res = dquotient(f, x, h, n, d, findiff);
+    double *res = dquotient(f, x, h, n, d, rule);
     if (!res) {
         PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory");
         free(x); free(res);

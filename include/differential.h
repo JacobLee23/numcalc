@@ -11,6 +11,7 @@ static struct FiniteDifference {
     double *(*second)(PyObject *f, double *x, double h, unsigned int d);
     double *(*nth)(PyObject *f, double *x, double h, unsigned int n, unsigned int d);
 };
+static enum FinDiffRule { FORWARD, BACKWARD, CENTRAL };
 
 static double *forward_first(PyObject *f, double *x, double h, unsigned int d);
 static double *forward_second(PyObject *f, double *x, double h, unsigned int d);
@@ -26,8 +27,6 @@ static double *central_first(PyObject *f, double *x, double h, unsigned int d);
 static double *central_second(PyObject *f, double *x, double h, unsigned int d);
 static double *central_nth(PyObject *f, double *x, double h, unsigned int n, unsigned int d);
 static struct FiniteDifference central = { central_first, central_second, central_nth };
-
-static enum FinDiffRule { FORWARD, BACKWARD, CENTRAL };
 
 static double *dquotient(
     PyObject *f, double *x, double h, unsigned int n, unsigned int d,

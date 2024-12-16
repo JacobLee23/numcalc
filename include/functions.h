@@ -1,5 +1,5 @@
 /**
- * Interfaces for evaluating representations of mathematical functions.
+ * Evaluation of mathematical function representations
  */
 
 #define PY_SSIZE_T_CLEAN

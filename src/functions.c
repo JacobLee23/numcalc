@@ -7,12 +7,11 @@
 
 
 /**
- * Evaluates a callable representation of a mathematical function of a given number of
- * real variables at a specified domain element.
+ * Evaluates a mathematical function of several real variables at a specified domain element.
  *
- * @param f A callable representation of a mathematical function of `d` real variables
+ * @param f A callable representation of a mathematical function of several real variables
  * @param x The domain element at which to evaluate `f`
- * @param d The number of dimensions of the domain of `f`
+ * @param d The number of dimensions in the domain of `f`
  * @return The value of `f` at `x`, or `DNAN` upon failure
  */
 double eval(PyObject *f, double *x, unsigned int d) {
