@@ -1,3 +1,3 @@
-# numcalc
+# PyNC
 
-**numcalc**, a C-extended Python module for numerical differential and integral calculus.
+**Py**thonic **N**umerical **C**alculus, a C-extended Python package for numerical differential and integral calculus.
