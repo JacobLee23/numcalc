@@ -3,31 +3,40 @@ requires = ["setuptools >= 61.0", "wheel >= 0.29.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "riemann"
-version = "1.0.0-b.1"
+name = "pync"
+version = "1.0.0-b.2"
 authors = [
   { name="Jacob Lee", email="Jacob.J.Lee@outlook.com" },
 ]
-description = "A package for computing Riemann summations in n-dimensional space"
+description = "A Python package containing C-extended modules for numerical differential and integral computation"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
+  "Programming Language :: C",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering :: Mathematics",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/JacobLee23/riemann"
-"Documentation" = "https://riemann-py.readthedocs.io/en/latest/"
-"Issue Tracker" = "https://github.com/JacobLee23/riemann/issues/"
+"Homepage" = "https://github.com/JacobLee23/pync"
+"Issue Tracker" = "https://github.com/JacobLee23/pync/issues/"
 
-[tools.setuptools]
-py-modules = ["riemann"]
+[tool.setuptools]
+packages = ["pync"]
+
+[tool.setuptools]
+ext-modules = {
+  { name = "pync.differential", sources = ["src/differential.c"], include-dirs = ["include"] },
+  { name = "pync.integral", sources = ["src/integral.c"], include-dirs = ["include"] },
+  { name = "pync.maclaurin", sources = ["src/maclaurin.c"], include-dirs = ["include"] },
+  { name = "pync.numbers", sources = ["src/numbers.c"], include-dirs = ["include"] },
+}
